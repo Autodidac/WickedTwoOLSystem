@@ -22,6 +22,15 @@
 #include "ImGui/IconsMaterialDesign.h"
 #endif
 
+// L System Stuff Here
+#include "TwoOLSystem.h"
+//#include <WickedRenderer.h>
+WickedRenderer treeRenderer = WickedRenderer();
+std::vector<LSystemGeneration> generations;
+FileManager filemanager;
+double simDuration = 40.0; // Simulate for set number of seconds
+TimeSimulator timesim;
+
 // Main Menu Stuff
 bool show_menu = true; // A flag to control the main menu visibility
 bool show_options = false;
@@ -351,9 +360,20 @@ void Example_ImGui::Compose(wi::graphics::CommandList cmd)
 		}
 		vertexOffset += drawList->VtxBuffer.size();
 	}
+		LoadTexture("../Content/logo_small_copy.png");
+/*
+	// Check if the menu should be shown
+	if (show_menu)
+	{
 
-	// Our Custom LoadTexture function
-	LoadTexture("../Content/logo_small_copy.png");
+		// Ensure the texture is loaded and valid
+		if (my_image_texture.IsValid())
+		{
+			// Draw the image using Wicked Engine
+			//wi::image::Draw(wi::texturehelper::getLogo(), wi::image::Params(75, 40, image_size.x, image_size.y), cmd);
+			wi::image::Draw(&my_image_texture, wi::image::Params(75, 40, image_size.x, image_size.y), cmd);
+		}
+	}*/
 }
 
 void Example_ImGuiRenderer::ResizeLayout()
@@ -394,6 +414,12 @@ void Example_ImGuiRenderer::Load()
 
 	// Load model.
 	wi::scene::LoadModel("../Content/models/bloom_test.wiscene");
+			// Create a custom pipe/open ended cylinder
+	/*wi::ecs::Entity pipe = wi::scene::GetScene().Entity_CreatePipe("Pipe", 1.0f, 1.0f, 8);
+	assert(pipe != wi::ecs::INVALID_ENTITY);
+	TransformComponent* transform_base_pipe = wi::scene::GetScene().transforms.GetComponent(pipe);
+	transform_base_pipe->Rotate(XMVectorSet(0, 0, 0, 1));
+*/
 		
 	RenderPath3D::Load();
 }
@@ -503,7 +529,26 @@ void Example_ImGuiRenderer::Update(float dt)
 
 		// Create a window without any decoration
 		ImGui::Begin("##Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+/*		// Check if the menu should be shown
+		if (show_menu)
+		{
+			LoadTexture(".. / Content / logo_small_copy.png");
 
+			// Ensure the texture is loaded and valid
+			if (my_image_texture.IsValid())
+			{
+				// Display the image
+				ImGui::Image(my_imgui_texture, ImVec2(512, 512)); // Adjust the size as needed
+				// Draw the image using Wicked Engine
+				//wi::image::Draw(&my_image_texture, wi::image::Params(75, 40, image_size.x, image_size.y), cmd);
+			}
+			else
+			{
+				// Handle texture load failure
+				//wi::image::Draw(wi::texturehelper::getLogo(), wi::image::Params(75, 40, image_size.x, image_size.y), cmd);
+			}
+		}
+*/
 		// Set background color (optional)
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.2f, 0.8f, 0.2f, 1.0f)); // Dark gray background
 
@@ -565,6 +610,54 @@ void Example_ImGuiRenderer::Update(float dt)
 
 	}
 
+/*
+	// Get screen size
+	ImVec2 screen_size = ImGui::GetIO().DisplaySize;
+
+	// Set the size and position of the ImGui window
+	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always); // Top-left corner
+	ImGui::SetNextWindowSize(ImVec2(screen_size.x / 4.0f, screen_size.y), ImGuiCond_Always); // 1/4 of the screen width
+
+	// Create a window without any decoration
+	ImGui::Begin("##Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+	// Set background color (optional)
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.2f, 0.2f, 0.2f, 1.0f)); // Dark gray background
+
+	// Calculate the size of each button
+	ImVec2 button_size(150, 50); // Adjust the size as needed
+
+	// Calculate the total height of the buttons including spacing
+	float spacing = ImGui::GetStyle().ItemSpacing.y;
+	float total_button_height = 3 * button_size.y + 2 * spacing;
+
+	// Calculate the starting position to center the buttons vertically
+	float start_y = (ImGui::GetWindowSize().y - total_button_height) / 2;
+	float start_x = (ImGui::GetWindowSize().x - button_size.x) / 2;
+
+	// Set the cursor position to the calculated starting position and draw each button
+	ImGui::SetCursorPos(ImVec2(start_x, start_y));
+	if (ImGui::Button("Start Game", button_size))
+	{
+		SwitchScene("../Content/models/sponza/sponza.wiscene"); // Load the game scene
+	}
+
+	ImGui::SetCursorPos(ImVec2(start_x, start_y + button_size.y + spacing));
+	if (ImGui::Button("Options", button_size))
+	{
+		SwitchScene("../Content/models/cylinder.wiscene"); // Load the options scene
+	}
+
+	ImGui::SetCursorPos(ImVec2(start_x, start_y + 2 * (button_size.y + spacing)));
+	if (ImGui::Button("Exit", button_size))
+	{
+		show_menu = false; // Set the flag to false to indicate exiting the menu
+	}
+
+	ImGui::PopStyleColor(); // Restore the original style
+
+	ImGui::End();*/
+
 	bool dockingopen = false;
 	if (ImGui::Begin("DockSpaceWicked", &dockingopen, window_flags))
 	{
@@ -588,7 +681,7 @@ void Example_ImGuiRenderer::Update(float dt)
 			node->LocalFlags |= ImGuiDockNodeFlags_NoTabBar;
 
 			ImGui::DockBuilderDockWindow("Scene", dock_id_left);
-			ImGui::DockBuilderDockWindow("Trees", dock_id_right); // we'll remove this later it fixes a bug
+			ImGui::DockBuilderDockWindow("Trees", dock_id_right);
 			ImGui::DockBuilderDockWindow("Options", dock_id_right);
 			ImGui::DockBuilderDockWindow(ICON_MD_TEXT_SNIPPET " Wicked Backlog", dock_id_bottom);
 			ImGui::DockBuilderDockWindow(ICON_MD_BUG_REPORT " Debugger", dock_id_bottom);
@@ -808,6 +901,97 @@ void Example_ImGuiRenderer::Update(float dt)
 			}
 		}
 
+		if (ImGui::CollapsingHeader(ICON_MD_HIGHLIGHT_ALT "  Vegitation Editor", ImGuiTreeNodeFlags_None)) //ImGuiTreeNodeFlags_DefaultOpen
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+			ImGui::PopStyleVar();
+
+			igTextTitle("Tree Editor");
+
+			static bool bIsWireRender = false;
+			if (ImGui::Checkbox("IsWireRender", &bIsWireRender))
+			{
+				wi::renderer::SetWireRender(bIsWireRender);
+			}
+			/*
+			static bool bcEyeAdaption = active_render->getEyeAdaptionEnabled();
+			if (ImGui::Checkbox("Eye Adaption", &bcEyeAdaption))
+			{
+				active_render->setEyeAdaptionEnabled(bcEyeAdaption);
+			}
+*/
+			if (ImGui::Button("Load"))
+			{
+				std::string filePath, selectedFile;
+				if (filemanager.OpenFileDialog(filePath, selectedFile))
+				{
+					generations = loadGenerationsFromFile(selectedFile);
+
+					wi::backlog::post("Selected File Path: " + filePath + "\n" + "Selected File Name: " + selectedFile, wi::backlog::LogLevel::Default);
+
+					if (!generations.empty())
+					{
+						std::string treename = "Tree";
+						treeRenderer.CreateTree(scene, treename, generations);
+
+						wi::backlog::post("L-system loaded and rendered", wi::backlog::LogLevel::Default);
+					}
+				}
+				else
+				{
+					wi::backlog::post("File selection canceled or failed.", wi::backlog::LogLevel::Error);
+				}
+			}
+
+			if (ImGui::Button("Save")) {
+				std::string filePath;
+				std::wstring saveFile = (L"treee.txt");
+				if (filemanager.SaveFileDialog(filePath, saveFile)) {
+
+					treeRenderer.SaveTree(generations, "treeee.txt");
+
+					wi::backlog::post("Save File Path: " + filePath + "\n" + "Save File Name: ", wi::backlog::LogLevel::Default);
+				}
+				else {
+					wi::backlog::post("File save canceled or failed.", wi::backlog::LogLevel::Error);
+				}
+			}
+
+			if (ImGui::Button("Start")) {
+				timesim.start(); // Start the time simulation
+			}
+			if (ImGui::Button("Stop")) {
+				timesim.stop();
+			}
+			if (ImGui::Button("Reset")) {
+				timesim.reset();
+			}
+			if (ImGui::Button("Reverse")) {
+				timesim.reverse();
+			}
+			/*
+			if (ImGui::Button("Pause")) {
+			}
+					*/
+			timesim.update(); // Update the time simulation
+
+			if (timesim.getIsReversed()) {
+				//std::cout << "Reversing time for the remaining half of the simulation" << std::endl;
+				//simulateNegativeGrowth(generations, timesim.getElapsedSeconds());
+			}
+			else
+			{
+				//simulateGrowth(generations, timesim.getElapsedSeconds());
+			}
+		}
+
+		/*
+				//PE: stop flickering when scrollbar goes on/off.
+				if (ImGui::GetCurrentWindow()->ScrollbarSizes.x > 0) {
+					ImGui::Text("");
+					ImGui::Text("");
+				}
+		*/
 		ImRect bbwin(ImGui::GetWindowPos(), ImGui::GetWindowPos() + ImGui::GetWindowSize());
 		if (ImGui::IsMouseHoveringRect(bbwin.Min, bbwin.Max))
 		{
