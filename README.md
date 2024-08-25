@@ -11,9 +11,6 @@ Was to make a free 2OLSystem that evolved into a Time and Node based Arboreal Ge
 
 
 ![](https://raw.githubusercontent.com/Autodidac/WickedTwoOLSystem/master/1.png)
-![](https://raw.githubusercontent.com/Autodidac/WickedTwoOLSystem/master/4.png)
-![](https://raw.githubusercontent.com/Autodidac/WickedTwoOLSystem/master/3.png)
-![](https://raw.githubusercontent.com/Autodidac/WickedTwoOLSystem/master/2.png)
-![](https://raw.githubusercontent.com/Autodidac/WickedTwoOLSystem/master/5.png)
+![](https://raw.githubusercontent.com/Autodidac/WickedTwoOLSystem/master/4.png)![](https://raw.githubusercontent.com/Autodidac/WickedTwoOLSystem/master/3.png)![](https://raw.githubusercontent.com/Autodidac/WickedTwoOLSystem/master/2.png)![](https://raw.githubusercontent.com/Autodidac/WickedTwoOLSystem/master/5.png)
 
 
