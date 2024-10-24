@@ -14,3 +14,5 @@ Was to make a free 2OLSystem that evolved into a Time and Node based Arboreal Ge
 ![](https://raw.githubusercontent.com/Autodidac/WickedTwoOLSystem/master/4.png)![](https://raw.githubusercontent.com/Autodidac/WickedTwoOLSystem/master/3.png)![](https://raw.githubusercontent.com/Autodidac/WickedTwoOLSystem/master/2.png)![](https://raw.githubusercontent.com/Autodidac/WickedTwoOLSystem/master/5.png)
 
 
+two months ago I started writing a game engine for myself and plan to finish and integrate this as a core feature, you'll notice if you use this that it's unfinished, it doesn't calculate correctly and is only everything you need up to the point of it working. These photos are from various iterations such as the stocastic stage.. I have since moved to a much more diverse system know as a 2OL system, with time and node based design so it's actually a hybrid system to simulate plant growth in stages and animate it.
+
